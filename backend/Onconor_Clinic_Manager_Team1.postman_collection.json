@@ -1,0 +1,1402 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Onconor Clinic Manager - Team 1 API",
+		"description": "Colección completa de APIs para gestión de usuarios, pacientes, médicos y especialidades del sistema Onconor Clinic Manager.\n\n**Equipo 1**: Gestión de Usuarios y Autenticación\n- Responsable Backend: Johan Jherli Becerra Ventura\n- Responsable Frontend: Joselyn Sanchez Sanchez\n\n**Endpoints incluidos:**\n- 🔐 Autenticación (Login, Register, Refresh)\n- 👥 Usuarios (CRUD, búsqueda)\n- 🏥 Pacientes (CRUD, búsqueda, validaciones)\n- 👨‍⚕️ Médicos (CRUD, especialidades)\n- 🩺 Especialidades (CRUD, gestión)\n\n**Variables de entorno requeridas:**\n- baseUrl: URL base del servidor\n- token: JWT token de autenticación\n- userId: ID del usuario autenticado",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.token) {",
+									"        pm.environment.set('token', response.data.token);",
+									"        pm.environment.set('userId', response.data.user.id);",
+									"        console.log('Token saved:', response.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@onconor.com\",\n    \"password\": \"Admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Autenticar usuario en el sistema"
+					}
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"establishment_id\": 1,\n    \"person_num_doc\": \"12345678\",\n    \"email\": \"nuevo@onconor.com\",\n    \"username\": \"nuevousuario\",\n    \"password\": \"Password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Registrar nuevo usuario en el sistema"
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/refresh",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Renovar token de autenticación"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Cerrar sesión del usuario"
+					}
+				}
+			],
+			"description": "Endpoints de autenticación del sistema"
+		},
+		{
+			"name": "👥 Users",
+			"item": [
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Obtener usuario por ID"
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"updated@onconor.com\",\n    \"username\": \"updateduser\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Actualizar datos del usuario"
+					}
+				},
+				{
+					"name": "Search Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/search?query=admin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "admin"
+								}
+							]
+						},
+						"description": "Buscar usuarios por término"
+					}
+				},
+				{
+					"name": "Get Users by Establishment",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/establishment/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"establishment",
+								"1"
+							]
+						},
+						"description": "Obtener usuarios por establecimiento"
+					}
+				},
+				{
+					"name": "Deactivate User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"2"
+							]
+						},
+						"description": "Desactivar usuario (soft delete)"
+					}
+				},
+				{
+					"name": "Activate User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/2/activate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"2",
+								"activate"
+							]
+						},
+						"description": "Activar usuario previamente desactivado"
+					}
+				}
+			],
+			"description": "Gestión de usuarios del sistema"
+		},
+		{
+			"name": "🏥 Patients",
+			"item": [
+				{
+					"name": "Create Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.patient) {",
+									"        pm.environment.set('patientId', response.data.patient.id);",
+									"        console.log('Patient ID saved:', response.data.patient.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": {{userId}},\n    \"dni\": \"87654321\",\n    \"firstName\": \"María\",\n    \"lastName\": \"González\",\n    \"dateOfBirth\": \"1990-05-15\",\n    \"gender\": \"F\",\n    \"phone\": \"+51987654321\",\n    \"address\": \"Av. Principal 123, Lima\",\n    \"emergencyContact\": \"Juan González - 999888777\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/patients",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients"
+							]
+						},
+						"description": "Crear nuevo paciente"
+					}
+				},
+				{
+					"name": "Get Patient by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/{{patientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"{{patientId}}"
+							]
+						},
+						"description": "Obtener paciente por ID"
+					}
+				},
+				{
+					"name": "Get Patient by DNI",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/dni/87654321",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"dni",
+								"87654321"
+							]
+						},
+						"description": "Obtener paciente por número de DNI"
+					}
+				},
+				{
+					"name": "Update Patient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+51999888777\",\n    \"address\": \"Av. Principal 456, Lima\",\n    \"emergencyContact\": \"Juan González - 888777666\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/{{patientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"{{patientId}}"
+							]
+						},
+						"description": "Actualizar datos del paciente"
+					}
+				},
+				{
+					"name": "Get Active Patients",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/active",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"active"
+							]
+						},
+						"description": "Obtener lista de pacientes activos"
+					}
+				},
+				{
+					"name": "Get Patients Paginated",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/paginated?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Obtener pacientes con paginación"
+					}
+				},
+				{
+					"name": "Search Patients",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/search?search=María&gender=F",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"search"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "María"
+								},
+								{
+									"key": "gender",
+									"value": "F"
+								}
+							]
+						},
+						"description": "Buscar pacientes por nombre y filtros"
+					}
+				},
+				{
+					"name": "Get Patient Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"stats"
+							]
+						},
+						"description": "Obtener estadísticas de pacientes"
+					}
+				},
+				{
+					"name": "Check DNI Availability",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/check-dni/11223344",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"check-dni",
+								"11223344"
+							]
+						},
+						"description": "Verificar disponibilidad de DNI"
+					}
+				},
+				{
+					"name": "Deactivate Patient",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/{{patientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"{{patientId}}"
+							]
+						},
+						"description": "Desactivar paciente (soft delete)"
+					}
+				},
+				{
+					"name": "Activate Patient",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/patients/{{patientId}}/activate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"patients",
+								"{{patientId}}",
+								"activate"
+							]
+						},
+						"description": "Activar paciente previamente desactivado"
+					}
+				}
+			],
+			"description": "Gestión completa de pacientes"
+		},
+		{
+			"name": "🩺 Specialties",
+			"item": [
+				{
+					"name": "Create Specialty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.specialty) {",
+									"        pm.environment.set('specialtyId', response.data.specialty.id);",
+									"        console.log('Specialty ID saved:', response.data.specialty.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Cardiología\",\n    \"description\": \"Especialidad médica que se ocupa del diagnóstico y tratamiento de las enfermedades del corazón y del sistema circulatorio\",\n    \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties"
+							]
+						},
+						"description": "Crear nueva especialidad médica"
+					}
+				},
+				{
+					"name": "Get Specialty by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/{{specialtyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"{{specialtyId}}"
+							]
+						},
+						"description": "Obtener especialidad por ID"
+					}
+				},
+				{
+					"name": "Get Specialty with Doctors",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/{{specialtyId}}/doctors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"{{specialtyId}}",
+								"doctors"
+							]
+						},
+						"description": "Obtener especialidad con médicos asociados"
+					}
+				},
+				{
+					"name": "Update Specialty",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Especialidad médica dedicada al diagnóstico, tratamiento y prevención de enfermedades cardiovasculares\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/{{specialtyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"{{specialtyId}}"
+							]
+						},
+						"description": "Actualizar datos de la especialidad"
+					}
+				},
+				{
+					"name": "Get Active Specialties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/active",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"active"
+							]
+						},
+						"description": "Obtener especialidades activas"
+					}
+				},
+				{
+					"name": "Get All Specialties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"all"
+							]
+						},
+						"description": "Obtener todas las especialidades (activas e inactivas)"
+					}
+				},
+				{
+					"name": "Get Specialties Paginated",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/paginated?page=1&limit=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Obtener especialidades con paginación"
+					}
+				},
+				{
+					"name": "Search Specialties",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/search?search=cardio&isActive=true",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"search"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "cardio"
+								},
+								{
+									"key": "isActive",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Buscar especialidades por término"
+					}
+				},
+				{
+					"name": "Get Specialty Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"stats"
+							]
+						},
+						"description": "Obtener estadísticas de especialidades"
+					}
+				},
+				{
+					"name": "Check Name Availability",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/check-name/Neurología",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"check-name",
+								"Neurología"
+							]
+						},
+						"description": "Verificar disponibilidad de nombre de especialidad"
+					}
+				},
+				{
+					"name": "Deactivate Specialty",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/{{specialtyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"{{specialtyId}}"
+							]
+						},
+						"description": "Desactivar especialidad (solo si no tiene médicos asociados)"
+					}
+				},
+				{
+					"name": "Activate Specialty",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/specialties/{{specialtyId}}/activate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"specialties",
+								"{{specialtyId}}",
+								"activate"
+							]
+						},
+						"description": "Activar especialidad previamente desactivada"
+					}
+				}
+			],
+			"description": "Gestión de especialidades médicas"
+		},
+		{
+			"name": "👨‍⚕️ Doctors",
+			"item": [
+				{
+					"name": "Create Doctor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.doctor) {",
+									"        pm.environment.set('doctorId', response.data.doctor.id);",
+									"        console.log('Doctor ID saved:', response.data.doctor.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": {{userId}},\n    \"medicalLicense\": \"CMP-12345\",\n    \"firstName\": \"Carlos\",\n    \"lastName\": \"Rodríguez\",\n    \"phone\": \"+51912345678\",\n    \"specialtyId\": {{specialtyId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors"
+							]
+						},
+						"description": "Crear nuevo médico"
+					}
+				},
+				{
+					"name": "Get Doctor by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/{{doctorId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"{{doctorId}}"
+							]
+						},
+						"description": "Obtener médico por ID"
+					}
+				},
+				{
+					"name": "Get Doctor by License",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/license/CMP-12345",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"license",
+								"CMP-12345"
+							]
+						},
+						"description": "Obtener médico por licencia médica"
+					}
+				},
+				{
+					"name": "Update Doctor",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+51987654321\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/{{doctorId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"{{doctorId}}"
+							]
+						},
+						"description": "Actualizar datos del médico"
+					}
+				},
+				{
+					"name": "Get Active Doctors",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/active",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"active"
+							]
+						},
+						"description": "Obtener lista de médicos activos"
+					}
+				},
+				{
+					"name": "Get Doctors Paginated",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/paginated?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Obtener médicos con paginación"
+					}
+				},
+				{
+					"name": "Get Doctors by Specialty",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/specialty/{{specialtyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"specialty",
+								"{{specialtyId}}"
+							]
+						},
+						"description": "Obtener médicos por especialidad"
+					}
+				},
+				{
+					"name": "Search Doctors",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/search?search=Carlos&specialtyId={{specialtyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"search"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Carlos"
+								},
+								{
+									"key": "specialtyId",
+									"value": "{{specialtyId}}"
+								}
+							]
+						},
+						"description": "Buscar médicos por nombre y especialidad"
+					}
+				},
+				{
+					"name": "Change Doctor Specialty",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"specialtyId\": {{specialtyId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/{{doctorId}}/specialty",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"{{doctorId}}",
+								"specialty"
+							]
+						},
+						"description": "Cambiar especialidad del médico"
+					}
+				},
+				{
+					"name": "Get Doctor Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/stats",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"stats"
+							]
+						},
+						"description": "Obtener estadísticas de médicos"
+					}
+				},
+				{
+					"name": "Check License Availability",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/check-license/CMP-99999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"check-license",
+								"CMP-99999"
+							]
+						},
+						"description": "Verificar disponibilidad de licencia médica"
+					}
+				},
+				{
+					"name": "Deactivate Doctor",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/{{doctorId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"{{doctorId}}"
+							]
+						},
+						"description": "Desactivar médico (soft delete)"
+					}
+				},
+				{
+					"name": "Activate Doctor",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/doctors/{{doctorId}}/activate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"doctors",
+								"{{doctorId}}",
+								"activate"
+							]
+						},
+						"description": "Activar médico previamente desactivado"
+					}
+				}
+			],
+			"description": "Gestión completa de médicos"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-generate timestamp for requests",
+					"pm.globals.set('timestamp', new Date().getTime());"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test to log response time",
+					"pm.test('Response time is less than 5000ms', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});",
+					"",
+					"// Global test for successful responses",
+					"pm.test('Status code is successful', function () {",
+					"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+					"});"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "collectionVersion",
+			"value": "1.0.0",
+			"type": "string"
+		},
+		{
+			"key": "teamNumber",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
